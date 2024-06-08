@@ -89,13 +89,17 @@ try {
       const commitMessage = github.context.payload.head_commit.message.toLowerCase();
       const sourceBranch = ref.toLowerCase();
 
+      // Determine increment type based on commit message
       if (commitMessage.startsWith('breaking change:') || commitMessage.startsWith('major:') || commitMessage.startsWith('!:')) {
         incrementType = 'major';
       } else if (commitMessage.startsWith('feature:') || commitMessage.startsWith('feat:')) {
         incrementType = 'minor';
       } else if (commitMessage.startsWith('bugfix:') || commitMessage.startsWith('hotfix:') || commitMessage.startsWith('fix:')) {
         incrementType = 'patch';
-      } else if (sourceBranch.includes('/feature/')) {
+      }
+
+      // Override increment type based on branch name if necessary
+      if (sourceBranch.includes('/feature/')) {
         incrementType = 'minor';
       } else if (sourceBranch.includes('/bugfix/') || sourceBranch.includes('/hotfix/')) {
         incrementType = 'patch';
@@ -117,6 +121,7 @@ try {
   }
 
   core.exportVariable('NEXT_VERSION', nextVersion);
+  core.info(`Exported NEXT_VERSION: ${nextVersion}`);
 
 } catch (error) {
   core.setFailed(`Action failed with error: ${error.message}`);
