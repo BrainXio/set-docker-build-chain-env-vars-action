@@ -1,0 +1,21 @@
+name: 'set-docker-build-chain-env-vars'
+description: 'Sets environment variables for Docker build chain and manages versioning based on commit messages.'
+inputs:
+  branch:
+    description: 'Branch name'
+    required: true
+  image_base:
+    description: 'Base Docker image'
+    required: true
+  image_version:
+    description: 'Version of the Docker image'
+    required: true
+  artifact_suffix:
+    description: 'Suffix for the artifact directory'
+    required: true
+  prefix:
+    description: 'Optional prefix for tags'
+    required: false
+runs:
+  using: 'node20'
+  main: 'index.js'
