@@ -92,6 +92,8 @@ try {
       let incrementType = 'patch';
       const commitMessage = github.context.payload.head_commit.message.toLowerCase();
       const sourceBranch = ref.toLowerCase();
+      core.info(`Commit message: ${commitMessage}`);
+      core.info(`Source branch: ${sourceBranch}`);
 
       // Determine increment type based on commit message
       if (commitMessage.startsWith('breaking change:') || commitMessage.startsWith('major:') || commitMessage.startsWith('!:')) {
@@ -109,6 +111,7 @@ try {
         incrementType = 'patch';
       } else if (sourceBranch.startsWith('refs/heads/release/v')) {
         const releaseVersion = sourceBranch.replace('refs/heads/release/v', '');
+        core.info(`Release version from branch: ${releaseVersion}`);
         if (semver.valid(releaseVersion) && semver.gt(releaseVersion, version.version)) {
           nextVersion = `v${releaseVersion}`;
           core.info(`Next version from release branch: ${nextVersion}`);
