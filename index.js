@@ -34,8 +34,8 @@ try {
   }
   core.exportVariable('BUILDER_IMAGE_VERSION', builderImageVersion);
 
-  // Use the branch input
-  const branch = core.getInput('branch').replace(/\//g, '-').toLowerCase();
+  // Use the branch directly from the context
+  const branch = github.context.ref.replace('refs/heads/', '').replace(/\//g, '-').toLowerCase();
   core.info(`Branch: ${branch}`);
 
   // Use runAttempt or provide a default value
@@ -91,7 +91,7 @@ try {
     if (version) {
       let incrementType = 'patch';
       const commitMessage = github.context.payload.head_commit.message.toLowerCase();
-      const sourceBranch = ref.toLowerCase();
+      const sourceBranch = github.context.ref.toLowerCase();
       core.info(`Commit message: ${commitMessage}`);
       core.info(`Source branch: ${sourceBranch}`);
 
