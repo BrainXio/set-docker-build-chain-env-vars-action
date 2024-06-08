@@ -120,7 +120,7 @@ try {
         }
       }
 
-      if (!nextVersion.startsWith('v')) {
+      if (nextVersion === 'v0.0.1') {
         nextVersion = `v${semver.inc(version.version, incrementType)}`;
         core.info(`Next version determined: ${nextVersion}`);
       }
