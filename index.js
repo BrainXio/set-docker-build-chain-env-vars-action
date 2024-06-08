@@ -65,6 +65,7 @@ try {
   let latestTag;
   try {
     latestTag = execSync('git describe --tags --abbrev=0').toString().trim();
+    core.info(`Latest tag found: ${latestTag}`);
   } catch (error) {
     core.info('No tags found in the repository.');
   }
@@ -72,7 +73,7 @@ try {
   let nextVersion = 'v0.0.1'; // Default version if no tags are found
   if (latestTag) {
     let currentVersion = latestTag.startsWith('v') ? latestTag.substring(1) : latestTag;
-    
+
     // Normalize partial versions to full semver
     const parts = currentVersion.split('.');
     if (parts.length === 1) {
@@ -82,32 +83,31 @@ try {
     }
 
     currentVersion = semver.parse(currentVersion);
+    core.info(`Current version parsed: ${currentVersion}`);
     if (currentVersion) {
       let incrementType = 'patch';
       const commitMessage = github.context.payload.head_commit.message.toLowerCase();
       const sourceBranch = ref.toLowerCase();
-      
+
       if (commitMessage.startsWith('breaking change:') || commitMessage.startsWith('major:') || commitMessage.startsWith('!:')) {
         incrementType = 'major';
-      } else if (commitMessage.startsWith('feature:') || commitMessage.startsWith('feat:')) {
+      } else if (commitMessage.startsWith('feature:') || commitMessage.startsWith('feat:') || sourceBranch.includes('/feature/')) {
         incrementType = 'minor';
-      } else if (commitMessage.startsWith('bugfix:') || commitMessage.startsWith('hotfix:') || commitMessage.startsWith('fix:')) {
-        incrementType = 'patch';
-      } else if (sourceBranch.includes('/feature/')) {
-        incrementType = 'minor';
-      } else if (sourceBranch.includes('/bugfix/') || sourceBranch.includes('/hotfix/')) {
+      } else if (commitMessage.startsWith('bugfix:') || commitMessage.startsWith('hotfix:') || commitMessage.startsWith('fix:') || sourceBranch.includes('/bugfix/') || sourceBranch.includes('/hotfix/')) {
         incrementType = 'patch';
       } else if (sourceBranch.startsWith('refs/heads/release/v')) {
         const releaseVersion = sourceBranch.replace('refs/heads/release/v', '');
-        if (semver.valid(releaseVersion) && semver.gt(releaseVersion, currentVersion)) {
+        if (semver.valid(releaseVersion) && semver.gt(releaseVersion, currentVersion.version)) {
           nextVersion = `v${releaseVersion}`;
+          core.info(`Next version from release branch: ${nextVersion}`);
         } else {
           core.setFailed('Invalid or non-incremental release version in branch name.');
         }
       }
 
-      if (incrementType !== 'release') {
+      if (!nextVersion.startsWith('v')) {
         nextVersion = `v${semver.inc(currentVersion.version, incrementType)}`;
+        core.info(`Next version determined: ${nextVersion}`);
       }
     }
   }
