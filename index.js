@@ -75,6 +75,8 @@ try {
   core.info(`Exported CURRENT_VERSION: ${currentVersion}`);
 
   let nextVersion = 'v0.0.1'; // Default next version if no tags are found
+  let versionBumpReason = 'default';
+
   if (latestTag) {
     let version = latestTag.startsWith('v') ? latestTag.substring(1) : latestTag;
 
@@ -98,22 +100,28 @@ try {
       // Determine increment type based on commit message
       if (commitMessage.startsWith('breaking change:') || commitMessage.startsWith('major:') || commitMessage.startsWith('!:')) {
         incrementType = 'major';
+        versionBumpReason = 'commit message';
       } else if (commitMessage.startsWith('feature:') || commitMessage.startsWith('feat:')) {
         incrementType = 'minor';
+        versionBumpReason = 'commit message';
       } else if (commitMessage.startsWith('bugfix:') || commitMessage.startsWith('hotfix:') || commitMessage.startsWith('fix:')) {
         incrementType = 'patch';
+        versionBumpReason = 'commit message';
       }
 
       // Override increment type based on branch name if necessary
       if (sourceBranch.includes('/feature/')) {
         incrementType = 'minor';
+        versionBumpReason = 'branch name';
       } else if (sourceBranch.includes('/bugfix/') || sourceBranch.includes('/hotfix/')) {
         incrementType = 'patch';
+        versionBumpReason = 'branch name';
       } else if (sourceBranch.startsWith('refs/heads/release/v')) {
         const releaseVersion = sourceBranch.replace('refs/heads/release/v', '');
         core.info(`Release version from branch: ${releaseVersion}`);
         if (semver.valid(releaseVersion) && semver.gt(releaseVersion, version.version)) {
           nextVersion = `v${releaseVersion}`;
+          versionBumpReason = 'release branch';
           core.info(`Next version from release branch: ${nextVersion}`);
         } else {
           core.setFailed('Invalid or non-incremental release version in branch name.');
@@ -128,7 +136,9 @@ try {
   }
 
   core.exportVariable('NEXT_VERSION', nextVersion);
+  core.exportVariable('VERSION_BUMP_REASON', versionBumpReason);
   core.info(`Exported NEXT_VERSION: ${nextVersion}`);
+  core.info(`Exported VERSION_BUMP_REASON: ${versionBumpReason}`);
 
 } catch (error) {
   core.setFailed(`Action failed with error: ${error.message}`);
