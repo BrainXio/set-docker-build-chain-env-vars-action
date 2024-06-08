@@ -4,20 +4,23 @@ const { execSync } = require('child_process');
 const semver = require('semver');
 
 try {
+  // Ensure required inputs are provided
+  const imageBase = core.getInput('image_base', { required: true });
+  const imageVersion = core.getInput('image_version', { required: true });
+  const artifactSuffix = core.getInput('artifact_suffix', { required: true });
+
   // Set APP_NAME
   const repo = github.context.repo.repo;
   const appName = repo.replace('-container', '').toLowerCase();
   core.exportVariable('APP_NAME', appName);
 
   // Set SAFE_IMAGE_BASE
-  const imageBase = core.getInput('image_base');
   const safeImageBase = imageBase.replace(/\//g, '-').replace(/-$/, '');
   core.exportVariable('SAFE_IMAGE_BASE', safeImageBase);
 
   // Set BUILDER_IMAGE_VERSION
   const ref = github.context.ref;
   const eventName = github.context.eventName;
-  const imageVersion = core.getInput('image_version');
   let builderImageVersion;
 
   if (ref.startsWith('refs/heads/feature/')) {
@@ -53,7 +56,6 @@ try {
   core.exportVariable('BUILDER_ID', builderId);
 
   // Set ARTIFACT_DIR
-  const artifactSuffix = core.getInput('artifact_suffix');
   const artifactDir = `artifacts/${new Date().toISOString().split('T')[0]}/${github.context.runId}/${safeImageBase}/${builderImageVersion}/${artifactSuffix}`;
   core.exportVariable('ARTIFACT_DIR', artifactDir);
 
