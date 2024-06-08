@@ -47,7 +47,7 @@ jobs:
   test_bugfix_branch:
     runs-on: ubuntu-latest
     env:
-      BRANCH_TEST: bugfix
+      BRANCH_TEST: bugfix/issue-x
 
     steps:
       - name: Checkout repository
@@ -87,7 +87,7 @@ jobs:
   test_hotfix_branch:
     runs-on: ubuntu-latest
     env:
-      BRANCH_TEST: hotfix
+      BRANCH_TEST: hotfix/issue-x
 
     steps:
       - name: Checkout repository
@@ -127,7 +127,7 @@ jobs:
   test_feature_branch:
     runs-on: ubuntu-latest
     env:
-      BRANCH_TEST: hotfix
+      BRANCH_TEST: feature/feat-x
 
     steps:
       - name: Checkout repository
