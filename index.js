@@ -61,30 +61,34 @@ try {
   execSync(`mkdir -p ${artifactDir}`);
   core.info(`Artifact storage created at ${artifactDir}`);
 
-  // Determine NEXT_VERSION
+  // Determine CURRENT_VERSION and NEXT_VERSION
   let latestTag;
+  let currentVersion = 'v0.0.0'; // Default version if no tags are found
   try {
     latestTag = execSync('git describe --tags --abbrev=0').toString().trim();
     core.info(`Latest tag found: ${latestTag}`);
+    currentVersion = latestTag.startsWith('v') ? latestTag : `v${latestTag}`;
   } catch (error) {
     core.info('No tags found in the repository.');
   }
+  core.exportVariable('CURRENT_VERSION', currentVersion);
+  core.info(`Exported CURRENT_VERSION: ${currentVersion}`);
 
-  let nextVersion = 'v0.0.1'; // Default version if no tags are found
+  let nextVersion = 'v0.0.1'; // Default next version if no tags are found
   if (latestTag) {
-    let currentVersion = latestTag.startsWith('v') ? latestTag.substring(1) : latestTag;
+    let version = latestTag.startsWith('v') ? latestTag.substring(1) : latestTag;
 
     // Normalize partial versions to full semver
-    const parts = currentVersion.split('.');
+    const parts = version.split('.');
     if (parts.length === 1) {
-      currentVersion = `${currentVersion}.0.0`;
+      version = `${version}.0.0`;
     } else if (parts.length === 2) {
-      currentVersion = `${currentVersion}.0`;
+      version = `${version}.0`;
     }
 
-    currentVersion = semver.parse(currentVersion);
-    core.info(`Current version parsed: ${currentVersion.version}`);
-    if (currentVersion) {
+    version = semver.parse(version);
+    core.info(`Current version parsed: ${version.version}`);
+    if (version) {
       let incrementType = 'patch';
       const commitMessage = github.context.payload.head_commit.message.toLowerCase();
       const sourceBranch = ref.toLowerCase();
@@ -105,7 +109,7 @@ try {
         incrementType = 'patch';
       } else if (sourceBranch.startsWith('refs/heads/release/v')) {
         const releaseVersion = sourceBranch.replace('refs/heads/release/v', '');
-        if (semver.valid(releaseVersion) && semver.gt(releaseVersion, currentVersion.version)) {
+        if (semver.valid(releaseVersion) && semver.gt(releaseVersion, version.version)) {
           nextVersion = `v${releaseVersion}`;
           core.info(`Next version from release branch: ${nextVersion}`);
         } else {
@@ -114,7 +118,7 @@ try {
       }
 
       if (!nextVersion.startsWith('v')) {
-        nextVersion = `v${semver.inc(currentVersion.version, incrementType)}`;
+        nextVersion = `v${semver.inc(version.version, incrementType)}`;
         core.info(`Next version determined: ${nextVersion}`);
       }
     }

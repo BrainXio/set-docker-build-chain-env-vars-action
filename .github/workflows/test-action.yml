@@ -44,6 +44,9 @@ jobs:
       - name: Print ARTIFACT_DIR
         run: echo "ARTIFACT_DIR=${{ env.ARTIFACT_DIR }}"
 
+      - name: Print CURRENT_VERSION
+        run: echo "CURRENT_VERSION=${{ env.CURRENT_VERSION }}"
+
       - name: Print NEXT_VERSION
         run: echo "NEXT_VERSION=${{ env.NEXT_VERSION }}"
 
@@ -86,6 +89,9 @@ jobs:
 
       - name: Print ARTIFACT_DIR
         run: echo "ARTIFACT_DIR=${{ env.ARTIFACT_DIR }}"
+
+      - name: Print CURRENT_VERSION
+        run: echo "CURRENT_VERSION=${{ env.CURRENT_VERSION }}"
 
       - name: Print NEXT_VERSION
         run: echo "NEXT_VERSION=${{ env.NEXT_VERSION }}"
@@ -130,6 +136,9 @@ jobs:
       - name: Print ARTIFACT_DIR
         run: echo "ARTIFACT_DIR=${{ env.ARTIFACT_DIR }}"
 
+      - name: Print CURRENT_VERSION
+        run: echo "CURRENT_VERSION=${{ env.CURRENT_VERSION }}"
+
       - name: Print NEXT_VERSION
         run: echo "NEXT_VERSION=${{ env.NEXT_VERSION }}"
 
@@ -173,6 +182,9 @@ jobs:
       - name: Print ARTIFACT_DIR
         run: echo "ARTIFACT_DIR=${{ env.ARTIFACT_DIR }}"
 
+      - name: Print CURRENT_VERSION
+        run: echo "CURRENT_VERSION=${{ env.CURRENT_VERSION }}"
+
       - name: Print NEXT_VERSION
         run: echo "NEXT_VERSION=${{ env.NEXT_VERSION }}"
 
@@ -187,7 +199,7 @@ jobs:
         with:
             fetch-depth: 0
             token: ${{ secrets.GITHUB_TOKEN }}
-            
+
       - name: Run Set Docker Build Chain Env Vars
         id: set-env-vars
         uses: ./
@@ -215,6 +227,9 @@ jobs:
 
       - name: Print ARTIFACT_DIR
         run: echo "ARTIFACT_DIR=${{ env.ARTIFACT_DIR }}"
+
+      - name: Print CURRENT_VERSION
+        run: echo "CURRENT_VERSION=${{ env.CURRENT_VERSION }}"
 
       - name: Print NEXT_VERSION
         run: echo "NEXT_VERSION=${{ env.NEXT_VERSION }}"
