@@ -83,7 +83,7 @@ try {
     }
 
     currentVersion = semver.parse(currentVersion);
-    core.info(`Current version parsed: ${currentVersion}`);
+    core.info(`Current version parsed: ${currentVersion.version}`);
     if (currentVersion) {
       let incrementType = 'patch';
       const commitMessage = github.context.payload.head_commit.message.toLowerCase();
@@ -91,9 +91,13 @@ try {
 
       if (commitMessage.startsWith('breaking change:') || commitMessage.startsWith('major:') || commitMessage.startsWith('!:')) {
         incrementType = 'major';
-      } else if (commitMessage.startsWith('feature:') || commitMessage.startsWith('feat:') || sourceBranch.includes('/feature/')) {
+      } else if (commitMessage.startsWith('feature:') || commitMessage.startsWith('feat:')) {
         incrementType = 'minor';
-      } else if (commitMessage.startsWith('bugfix:') || commitMessage.startsWith('hotfix:') || commitMessage.startsWith('fix:') || sourceBranch.includes('/bugfix/') || sourceBranch.includes('/hotfix/')) {
+      } else if (commitMessage.startsWith('bugfix:') || commitMessage.startsWith('hotfix:') || commitMessage.startsWith('fix:')) {
+        incrementType = 'patch';
+      } else if (sourceBranch.includes('/feature/')) {
+        incrementType = 'minor';
+      } else if (sourceBranch.includes('/bugfix/') || sourceBranch.includes('/hotfix/')) {
         incrementType = 'patch';
       } else if (sourceBranch.startsWith('refs/heads/release/v')) {
         const releaseVersion = sourceBranch.replace('refs/heads/release/v', '');
