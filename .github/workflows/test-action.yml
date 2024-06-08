@@ -12,6 +12,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+            fetch-depth: 0
+            token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Run Set Docker Build Chain Env Vars
         id: set-env-vars
@@ -52,7 +55,10 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
+        with:
+            fetch-depth: 0
+            token: ${{ secrets.GITHUB_TOKEN }}
+            
       - name: Run Set Docker Build Chain Env Vars
         id: set-env-vars
         uses: ./
@@ -92,6 +98,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+            fetch-depth: 0
+            token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Run Set Docker Build Chain Env Vars
         id: set-env-vars
@@ -132,6 +141,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+            fetch-depth: 0
+            token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Run Set Docker Build Chain Env Vars
         id: set-env-vars
@@ -172,7 +184,10 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
+        with:
+            fetch-depth: 0
+            token: ${{ secrets.GITHUB_TOKEN }}
+            
       - name: Run Set Docker Build Chain Env Vars
         id: set-env-vars
         uses: ./
