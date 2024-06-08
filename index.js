@@ -83,15 +83,31 @@ try {
 
     currentVersion = semver.parse(currentVersion);
     if (currentVersion) {
+      let incrementType = 'patch';
       const commitMessage = github.context.payload.head_commit.message.toLowerCase();
+      const sourceBranch = ref.toLowerCase();
+      
       if (commitMessage.startsWith('breaking change:') || commitMessage.startsWith('major:') || commitMessage.startsWith('!:')) {
-        nextVersion = `v${currentVersion.major + 1}.0.0`;
+        incrementType = 'major';
       } else if (commitMessage.startsWith('feature:') || commitMessage.startsWith('feat:')) {
-        nextVersion = `v${currentVersion.major}.${currentVersion.minor + 1}.0`;
+        incrementType = 'minor';
       } else if (commitMessage.startsWith('bugfix:') || commitMessage.startsWith('hotfix:') || commitMessage.startsWith('fix:')) {
-        nextVersion = `v${currentVersion.major}.${currentVersion.minor}.${currentVersion.patch + 1}`;
-      } else {
-        nextVersion = `v${semver.inc(currentVersion.version, 'patch')}`; // Default to patch increment
+        incrementType = 'patch';
+      } else if (sourceBranch.includes('/feature/')) {
+        incrementType = 'minor';
+      } else if (sourceBranch.includes('/bugfix/') || sourceBranch.includes('/hotfix/')) {
+        incrementType = 'patch';
+      } else if (sourceBranch.startsWith('refs/heads/release/v')) {
+        const releaseVersion = sourceBranch.replace('refs/heads/release/v', '');
+        if (semver.valid(releaseVersion) && semver.gt(releaseVersion, currentVersion)) {
+          nextVersion = `v${releaseVersion}`;
+        } else {
+          core.setFailed('Invalid or non-incremental release version in branch name.');
+        }
+      }
+
+      if (incrementType !== 'release') {
+        nextVersion = `v${semver.inc(currentVersion.version, incrementType)}`;
       }
     }
   }
