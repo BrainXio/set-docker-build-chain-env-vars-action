@@ -3,8 +3,11 @@ name: Test Set Docker Build Chain Env Vars
 on: [push, pull_request]
 
 jobs:
-  test:
+
+  test_commit_message:
     runs-on: ubuntu-latest
+    env:
+      BRANCH_TEST: devel
 
     steps:
       - name: Checkout repository
@@ -14,10 +17,170 @@ jobs:
         id: set-env-vars
         uses: ./
         with:
-          branch: 'devel'
+          branch: ${{ env.BRANCH_TEST }}
           image_base: 'nvidia/cuda'
           image_version: '12.5.6-base-ubuntu22.04'
-          artifact_suffix: 'devel'
+          artifact_suffix: ${{ env.BRANCH_TEST }}
+          prefix: 'custom'
+
+      - name: Print APP_NAME
+        run: echo "APP_NAME=${{ env.APP_NAME }}"
+
+      - name: Print SAFE_IMAGE_BASE
+        run: echo "SAFE_IMAGE_BASE=${{ env.SAFE_IMAGE_BASE }}"
+
+      - name: Print BUILDER_IMAGE_VERSION
+        run: echo "BUILDER_IMAGE_VERSION=${{ env.BUILDER_IMAGE_VERSION }}"
+
+      - name: Print BUILD_ID
+        run: echo "BUILD_ID=${{ env.BUILD_ID }}"
+
+      - name: Print BUILDER_ID
+        run: echo "BUILDER_ID=${{ env.BUILDER_ID }}"
+
+      - name: Print ARTIFACT_DIR
+        run: echo "ARTIFACT_DIR=${{ env.ARTIFACT_DIR }}"
+
+      - name: Print NEXT_VERSION
+        run: echo "NEXT_VERSION=${{ env.NEXT_VERSION }}"
+
+  test_bugfix_branch:
+    runs-on: ubuntu-latest
+    env:
+      BRANCH_TEST: bugfix
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run Set Docker Build Chain Env Vars
+        id: set-env-vars
+        uses: ./
+        with:
+          branch: ${{ env.BRANCH_TEST }}
+          image_base: 'nvidia/cuda'
+          image_version: '12.5.6-base-ubuntu22.04'
+          artifact_suffix: ${{ env.BRANCH_TEST }}
+          prefix: 'custom'
+
+      - name: Print APP_NAME
+        run: echo "APP_NAME=${{ env.APP_NAME }}"
+
+      - name: Print SAFE_IMAGE_BASE
+        run: echo "SAFE_IMAGE_BASE=${{ env.SAFE_IMAGE_BASE }}"
+
+      - name: Print BUILDER_IMAGE_VERSION
+        run: echo "BUILDER_IMAGE_VERSION=${{ env.BUILDER_IMAGE_VERSION }}"
+
+      - name: Print BUILD_ID
+        run: echo "BUILD_ID=${{ env.BUILD_ID }}"
+
+      - name: Print BUILDER_ID
+        run: echo "BUILDER_ID=${{ env.BUILDER_ID }}"
+
+      - name: Print ARTIFACT_DIR
+        run: echo "ARTIFACT_DIR=${{ env.ARTIFACT_DIR }}"
+
+      - name: Print NEXT_VERSION
+        run: echo "NEXT_VERSION=${{ env.NEXT_VERSION }}"
+
+  test_hotfix_branch:
+    runs-on: ubuntu-latest
+    env:
+      BRANCH_TEST: hotfix
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run Set Docker Build Chain Env Vars
+        id: set-env-vars
+        uses: ./
+        with:
+          branch: ${{ env.BRANCH_TEST }}
+          image_base: 'nvidia/cuda'
+          image_version: '12.5.6-base-ubuntu22.04'
+          artifact_suffix: ${{ env.BRANCH_TEST }}
+          prefix: 'custom'
+
+      - name: Print APP_NAME
+        run: echo "APP_NAME=${{ env.APP_NAME }}"
+
+      - name: Print SAFE_IMAGE_BASE
+        run: echo "SAFE_IMAGE_BASE=${{ env.SAFE_IMAGE_BASE }}"
+
+      - name: Print BUILDER_IMAGE_VERSION
+        run: echo "BUILDER_IMAGE_VERSION=${{ env.BUILDER_IMAGE_VERSION }}"
+
+      - name: Print BUILD_ID
+        run: echo "BUILD_ID=${{ env.BUILD_ID }}"
+
+      - name: Print BUILDER_ID
+        run: echo "BUILDER_ID=${{ env.BUILDER_ID }}"
+
+      - name: Print ARTIFACT_DIR
+        run: echo "ARTIFACT_DIR=${{ env.ARTIFACT_DIR }}"
+
+      - name: Print NEXT_VERSION
+        run: echo "NEXT_VERSION=${{ env.NEXT_VERSION }}"
+
+  test_feature_branch:
+    runs-on: ubuntu-latest
+    env:
+      BRANCH_TEST: hotfix
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run Set Docker Build Chain Env Vars
+        id: set-env-vars
+        uses: ./
+        with:
+          branch: ${{ env.BRANCH_TEST }}
+          image_base: 'nvidia/cuda'
+          image_version: '12.5.6-base-ubuntu22.04'
+          artifact_suffix: ${{ env.BRANCH_TEST }}
+          prefix: 'custom'
+
+      - name: Print APP_NAME
+        run: echo "APP_NAME=${{ env.APP_NAME }}"
+
+      - name: Print SAFE_IMAGE_BASE
+        run: echo "SAFE_IMAGE_BASE=${{ env.SAFE_IMAGE_BASE }}"
+
+      - name: Print BUILDER_IMAGE_VERSION
+        run: echo "BUILDER_IMAGE_VERSION=${{ env.BUILDER_IMAGE_VERSION }}"
+
+      - name: Print BUILD_ID
+        run: echo "BUILD_ID=${{ env.BUILD_ID }}"
+
+      - name: Print BUILDER_ID
+        run: echo "BUILDER_ID=${{ env.BUILDER_ID }}"
+
+      - name: Print ARTIFACT_DIR
+        run: echo "ARTIFACT_DIR=${{ env.ARTIFACT_DIR }}"
+
+      - name: Print NEXT_VERSION
+        run: echo "NEXT_VERSION=${{ env.NEXT_VERSION }}"
+
+  test_release_branch:
+    runs-on: ubuntu-latest
+    env:
+      BRANCH_TEST: release/v1.0.0
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run Set Docker Build Chain Env Vars
+        id: set-env-vars
+        uses: ./
+        with:
+          branch: ${{ env.BRANCH_TEST }}
+          image_base: 'nvidia/cuda'
+          image_version: '12.5.6-base-ubuntu22.04'
+          artifact_suffix: ${{ env.BRANCH_TEST }}
           prefix: 'custom'
 
       - name: Print APP_NAME
