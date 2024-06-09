@@ -1,0 +1,21 @@
+{
+    "name": "set-docker-build-chain-env-vars",
+    "version": "0.0.1",
+    "description": "Sets environment variables for Docker build chain and manages versioning based on commit messages.",
+    "main": "index.js",
+    "scripts": {
+      "test": "echo \"No tests specified\" && exit 0"
+    },
+    "author": "mrrobot0985",
+    "license": "The Unlicense",
+    "dependencies": {
+      "@actions/core": "^1.10.0",
+      "@actions/github": "^5.0.3",
+      "child_process": "^1.0.2",
+      "semver": "^7.3.5"
+    },
+    "devDependencies": {
+      "eslint": "^8.31.0"
+    }
+  }
+  
