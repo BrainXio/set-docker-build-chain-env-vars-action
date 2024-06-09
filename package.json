@@ -16,10 +16,14 @@
     "semver": "^7.3.5"
   },
   "devDependencies": {
+<<<<<<< HEAD
     "eslint": "^8.31.0",
     "@typescript-eslint/parser": "^5.12.0",
     "@typescript-eslint/eslint-plugin": "^5.12.0",
     "eslint-plugin-prettier": "^4.0.0",
     "prettier": "^2.7.0"
+=======
+    "eslint": "^8.31.0"
+>>>>>>> devel
   }
 }

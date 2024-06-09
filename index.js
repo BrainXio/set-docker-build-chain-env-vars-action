@@ -1,7 +1,21 @@
-const core = require('@actions/core');
-const github = require('@actions/github');
-const { execSync } = require('child_process');
-const semver = require('semver');
+import * as core from '@actions/core';
+import * as github from '@actions/github';
+import { execSync } from 'child_process';
+import semver from 'semver';
+
+function runCommand(command) {
+  try {
+    return execSync(command).toString().trim();
+  } catch (error) {
+    core.info(`Command failed: ${command}`);
+    return null;
+  }
+}
+
+function setEnvironmentVariable(name, value) {
+  core.exportVariable(name, value);
+  core.info(`${name}: ${value}`);
+}
 
 try {
   // Ensure required inputs are provided
@@ -11,17 +25,13 @@ try {
 
   // Set APP_NAME
   const repo = github.context.repo.repo;
-  if (!repo) {
-    throw new Error('Repository name is not available in the GitHub context.');
-  }
+  if (!repo) throw new Error('Repository name is not available in the GitHub context.');
   const appName = repo.replace('-container', '').toLowerCase();
-  core.exportVariable('APP_NAME', appName);
-  core.info(`APP_NAME: ${appName}`);
+  setEnvironmentVariable('APP_NAME', appName);
 
   // Set SAFE_IMAGE_BASE
   const safeImageBase = imageBase.replace(/\//g, '-').replace(/-$/, '');
-  core.exportVariable('SAFE_IMAGE_BASE', safeImageBase);
-  core.info(`SAFE_IMAGE_BASE: ${safeImageBase}`);
+  setEnvironmentVariable('SAFE_IMAGE_BASE', safeImageBase);
 
   // Set BUILDER_IMAGE_VERSION
   const ref = github.context.ref;
@@ -40,8 +50,7 @@ try {
   } else {
     builderImageVersion = imageVersion;
   }
-  core.exportVariable('BUILDER_IMAGE_VERSION', builderImageVersion);
-  core.info(`BUILDER_IMAGE_VERSION: ${builderImageVersion}`);
+  setEnvironmentVariable('BUILDER_IMAGE_VERSION', builderImageVersion);
 
   // Use the branch directly from the context
   const branch = ref.replace('refs/heads/', '').replace(/\//g, '-').toLowerCase();
@@ -54,36 +63,34 @@ try {
   // Set BUILD_ID
   const shortSha = github.context.sha.substring(0, 7);
   const imageTag = `${shortSha}-${github.context.runId}-${github.context.runNumber}-${runAttempt}-${branch}-${safeImageBase}-${builderImageVersion}`;
-  core.exportVariable('BUILD_ID', imageTag);
-  core.info(`BUILD_ID: ${imageTag}`);
+  setEnvironmentVariable('BUILD_ID', imageTag);
 
   // Set BUILDER_ID
   const prefix = core.getInput('prefix');
   const builderId = prefix ? `${prefix}-${imageTag}` : imageTag;
-  core.exportVariable('BUILDER_ID', builderId);
-  core.info(`BUILDER_ID: ${builderId}`);
+  setEnvironmentVariable('BUILDER_ID', builderId);
 
   // Set ARTIFACT_DIR
   const artifactDir = `artifacts/${new Date().toISOString().split('T')[0]}/${github.context.runId}/${safeImageBase}/${builderImageVersion}/${artifactSuffix}`;
-  core.exportVariable('ARTIFACT_DIR', artifactDir);
-  core.info(`ARTIFACT_DIR: ${artifactDir}`);
+  setEnvironmentVariable('ARTIFACT_DIR', artifactDir);
 
   // Create Artifact Storage
-  execSync(`mkdir -p ${artifactDir}`);
+  runCommand(`mkdir -p ${artifactDir}`);
   core.info(`Artifact storage created at ${artifactDir}`);
 
   // Determine CURRENT_VERSION and NEXT_VERSION
   let latestTag;
   let currentVersion = 'v0.0.0'; // Default version if no tags are found
   try {
-    latestTag = execSync('git describe --tags --abbrev=0').toString().trim();
-    core.info(`Latest tag found: ${latestTag}`);
-    currentVersion = latestTag.startsWith('v') ? latestTag : `v${latestTag}`;
+    latestTag = runCommand('git describe --tags --abbrev=0');
+    if (latestTag) {
+      core.info(`Latest tag found: ${latestTag}`);
+      currentVersion = latestTag.startsWith('v') ? latestTag : `v${latestTag}`;
+    }
   } catch (error) {
     core.info('No tags found in the repository.');
   }
-  core.exportVariable('CURRENT_VERSION', currentVersion);
-  core.info(`CURRENT_VERSION: ${currentVersion}`);
+  setEnvironmentVariable('CURRENT_VERSION', currentVersion);
 
   let nextVersion = 'v0.0.1'; // Default next version if no tags are found
   let versionBumpReason = 'default';
@@ -146,12 +153,8 @@ try {
     }
   }
 
-  core.exportVariable('NEXT_VERSION', nextVersion);
-  core.exportVariable('VERSION_BUMP_REASON', versionBumpReason);
-  core.info(`NEXT_VERSION: ${nextVersion}`);
-  core.info(`VERSION_BUMP_REASON: ${versionBumpReason}`);
-
-  // Set output for NEXT_VERSION
+  setEnvironmentVariable('NEXT_VERSION', nextVersion);
+  setEnvironmentVariable('VERSION_BUMP_REASON', versionBumpReason);
   core.setOutput('NEXT_VERSION', nextVersion);
 
 } catch (error) {
