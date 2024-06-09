@@ -47,6 +47,7 @@ jobs:
           path: npm_audit_output.txt
 
   notifications:
+    needs: security-scan
     runs-on: ubuntu-latest
 
     steps:
