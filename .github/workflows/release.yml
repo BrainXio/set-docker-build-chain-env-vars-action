@@ -19,9 +19,23 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+          
+      - name: Cache Node.js modules
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
 
       - name: Install dependencies
         run: npm install
+
+      - name: Lint code
+        run: npm run lint
+
+      - name: Run tests
+        run: npm test
 
       - name: Create GitHub Release
         uses: actions/create-release@v1
@@ -35,3 +49,25 @@ jobs:
             - Your changelog or release notes
           draft: false
           prerelease: false
+
+  # Notification steps
+  notifications:
+    runs-on: ubuntu-latest
+    needs: create_release
+
+    steps:
+      - name: Notify Always
+        if: always()
+        run: echo "Notification placeholder for always()"
+
+      - name: Notify Success
+        if: success()
+        run: echo "Notification placeholder for success()"
+
+      - name: Notify Failure
+        if: failure()
+        run: echo "Notification placeholder for failure()"
+
+      - name: Notify Cancelled
+        if: cancelled()
+        run: echo "Notification placeholder for cancelled()"
