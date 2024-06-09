@@ -37,6 +37,18 @@ jobs:
       - name: Run tests
         run: npm test
 
+      - name: Generate Release Notes
+        id: release_notes
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const { execSync } = require('child_process');
+            const tag = process.env.GITHUB_REF.replace('refs/tags/', '');
+            const previousTag = execSync(`git describe --abbrev=0 --tags $(git rev-list --tags --skip=1 --max-count=1)`).toString().trim();
+            const commits = execSync(`git log ${previousTag}..${tag} --pretty=format:'%h - %s (%an)'`).toString();
+            const body = `## Changes in this release\n\n${commits}`;
+            return body;
+
       - name: Create GitHub Release
         uses: actions/create-release@v1
         env:
@@ -44,9 +56,7 @@ jobs:
         with:
           tag_name: ${{ github.ref }}
           release_name: Release ${{ github.ref }}
-          body: |
-            ## Changes in this release
-            - Your changelog or release notes
+          body: ${{ steps.release_notes.outputs.result }}
           draft: false
           prerelease: false
 
