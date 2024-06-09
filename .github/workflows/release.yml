@@ -1,0 +1,83 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  create_release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          
+      - name: Cache Node.js modules
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Lint code
+        run: npm run lint
+
+      - name: Run tests
+        run: npm test
+
+      - name: Generate Release Notes
+        id: release_notes
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const { execSync } = require('child_process');
+            const tag = process.env.GITHUB_REF.replace('refs/tags/', '');
+            const previousTag = execSync(`git describe --abbrev=0 --tags $(git rev-list --tags --skip=1 --max-count=1)`).toString().trim();
+            const commits = execSync(`git log ${previousTag}..${tag} --pretty=format:'%h - %s (%an)'`).toString();
+            const body = `## Changes in this release\n\n${commits}`;
+            return body;
+
+      - name: Create GitHub Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: ${{ steps.release_notes.outputs.result }}
+          draft: false
+          prerelease: false
+
+  # Notification steps
+  notifications:
+    runs-on: ubuntu-latest
+    needs: create_release
+
+    steps:
+      - name: Notify Always
+        if: always()
+        run: echo "Notification placeholder for always()"
+
+      - name: Notify Success
+        if: success()
+        run: echo "Notification placeholder for success()"
+
+      - name: Notify Failure
+        if: failure()
+        run: echo "Notification placeholder for failure()"
+
+      - name: Notify Cancelled
+        if: cancelled()
+        run: echo "Notification placeholder for cancelled()"
