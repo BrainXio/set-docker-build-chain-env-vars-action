@@ -44,8 +44,8 @@ jobs:
       - name: Print CURRENT_VERSION
         run: echo "CURRENT_VERSION=${{ env.CURRENT_VERSION }}"
 
-      - name: Print VERSION_BUMP_REASON
-        run: echo "VERSION_BUMP_REASON=${{ env.VERSION_BUMP_REASON }}"
-
       - name: Print NEXT_VERSION
         run: echo "NEXT_VERSION=${{ env.NEXT_VERSION }}"
+
+      - name: Print VERSION_BUMP_REASON
+        run: echo "VERSION_BUMP_REASON=${{ env.VERSION_BUMP_REASON }}"
