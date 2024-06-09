@@ -1,10 +1,15 @@
 name: Security Scan
 
 on:
-  push:
   schedule:
     - cron: '0 0 * * 0' # Every Sunday at midnight
-  workflow_dispatch:
+  push:
+    branches:
+      - '**' # Every branch
+  pull_request:
+    branches:
+      - main
+      - develop
 
 jobs:
   security-scan:
@@ -20,7 +25,7 @@ jobs:
           node-version: '20'
 
       - name: Cache Node.js modules
-        uses: actions/cache@v4
+        uses: actions/cache@v3
         with:
           path: ~/.npm
           key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
@@ -31,10 +36,23 @@ jobs:
         run: npm install
 
       - name: Run security scan
-        run: npm audit --audit-level=moderate > npm_audit_output.txt || true
+        run: |
+          npm audit --audit-level=moderate > npm_audit_output.txt
+          cat npm_audit_output.txt
 
       - name: Upload security scan report
         uses: actions/upload-artifact@v4
         with:
           name: security-scan-report
           path: npm_audit_output.txt
+
+      - name: Notify on failure
+        if: failure()
+        run: echo "Security scan failed!" | tee audit_fail_notification.txt
+
+      - name: Upload failure notification
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: audit-fail-notification
+          path: audit_fail_notification.txt
