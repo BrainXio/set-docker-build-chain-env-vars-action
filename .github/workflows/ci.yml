@@ -193,7 +193,6 @@ jobs:
 
   notifications:
     runs-on: ubuntu-latest
-    needs: [sync-version, lint-and-quality-checks, update-dependencies]
 
     steps:
       - name: Notify Always
