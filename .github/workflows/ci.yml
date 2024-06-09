@@ -70,7 +70,6 @@ jobs:
             echo "Versions match: ${{ env.tag }}"
             echo "needs_update=false" >> $GITHUB_ENV
             echo "needs_update: false" > needs_update.txt
-          fi
 
       - name: Upload comparison result artifact
         uses: actions/upload-artifact@v4
@@ -95,6 +94,22 @@ jobs:
         with:
           name: updated-package-json
           path: package.json
+
+      - name: Notify Always
+        if: always()
+        run: echo "Sync Version Job: This will always run"
+
+      - name: Notify Success
+        if: success()
+        run: echo "Sync Version Job: This runs on success"
+
+      - name: Notify Failure
+        if: failure()
+        run: echo "Sync Version Job: This runs on failure"
+
+      - name: Notify Cancelled
+        if: cancelled()
+        run: echo "Sync Version Job: This runs on cancelled"
 
   lint-and-quality-checks:
     runs-on: ubuntu-latest
@@ -150,6 +165,22 @@ jobs:
           name: test-output
           path: test_output.txt
 
+      - name: Notify Always
+        if: always()
+        run: echo "Lint and Quality Checks Job: This will always run"
+
+      - name: Notify Success
+        if: success()
+        run: echo "Lint and Quality Checks Job: This runs on success"
+
+      - name: Notify Failure
+        if: failure()
+        run: echo "Lint and Quality Checks Job: This runs on failure"
+
+      - name: Notify Cancelled
+        if: cancelled()
+        run: echo "Lint and Quality Checks Job: This runs on cancelled"
+
   update-dependencies:
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
@@ -191,22 +222,18 @@ jobs:
           git commit -m "chore: update dependencies"
           git push origin HEAD:main
 
-  notifications:
-    runs-on: ubuntu-latest
-
-    steps:
       - name: Notify Always
         if: always()
-        run: echo "This will always run"
+        run: echo "Update Dependencies Job: This will always run"
 
       - name: Notify Success
         if: success()
-        run: echo "This runs on success"
+        run: echo "Update Dependencies Job: This runs on success"
 
       - name: Notify Failure
         if: failure()
-        run: echo "This runs on failure"
+        run: echo "Update Dependencies Job: This runs on failure"
 
       - name: Notify Cancelled
         if: cancelled()
-        run: echo "This runs on cancelled"
+        run: echo "Update Dependencies Job: This runs on cancelled"
