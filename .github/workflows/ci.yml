@@ -97,19 +97,23 @@ jobs:
 
       - name: Notify Always
         if: always()
-        run: echo "Sync Version Job: This will always run"
+        run: |
+          echo "Sync Version Job: This will always run"
 
       - name: Notify Success
         if: success()
-        run: echo "Sync Version Job: This runs on success"
+        run: |
+          echo "Sync Version Job: This runs on success"
 
       - name: Notify Failure
         if: failure()
-        run: echo "Sync Version Job: This runs on failure"
+        run: |
+          echo "Sync Version Job: This runs on failure"
 
       - name: Notify Cancelled
         if: cancelled()
-        run: echo "Sync Version Job: This runs on cancelled"
+        run: |
+          echo "Sync Version Job: This runs on cancelled"
 
   lint-and-quality-checks:
     runs-on: ubuntu-latest
@@ -167,19 +171,23 @@ jobs:
 
       - name: Notify Always
         if: always()
-        run: echo "Lint and Quality Checks Job: This will always run"
+        run: |
+          echo "Lint and Quality Checks Job: This will always run"
 
       - name: Notify Success
         if: success()
-        run: echo "Lint and Quality Checks Job: This runs on success"
+        run: |
+          echo "Lint and Quality Checks Job: This runs on success"
 
       - name: Notify Failure
         if: failure()
-        run: echo "Lint and Quality Checks Job: This runs on failure"
+        run: |
+          echo "Lint and Quality Checks Job: This runs on failure"
 
       - name: Notify Cancelled
         if: cancelled()
-        run: echo "Lint and Quality Checks Job: This runs on cancelled"
+        run: |
+          echo "Lint and Quality Checks Job: This runs on cancelled"
 
   update-dependencies:
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
@@ -224,16 +232,20 @@ jobs:
 
       - name: Notify Always
         if: always()
-        run: echo "Update Dependencies Job: This will always run"
+        run: |
+          echo "Update Dependencies Job: This will always run"
 
       - name: Notify Success
         if: success()
-        run: echo "Update Dependencies Job: This runs on success"
+        run: |
+          echo "Update Dependencies Job: This runs on success"
 
       - name: Notify Failure
         if: failure()
-        run: echo "Update Dependencies Job: This runs on failure"
+        run: |
+          echo "Update Dependencies Job: This runs on failure"
 
       - name: Notify Cancelled
         if: cancelled()
-        run: echo "Update Dependencies Job: This runs on cancelled"
+        run: |
+          echo "Update Dependencies Job: This runs on cancelled"
