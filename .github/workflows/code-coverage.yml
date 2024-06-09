@@ -15,6 +15,14 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Cache node_modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
       - name: Install dependencies
         run: npm install
 
@@ -26,3 +34,19 @@ jobs:
         with:
           name: coverage-report
           path: coverage
+
+      - name: Notify on success
+        if: ${{ success() }}
+        run: echo "Tests passed successfully!"
+
+      - name: Notify on failure
+        if: ${{ failure() }}
+        run: echo "Tests failed!"
+
+      - name: Notify on cancellation
+        if: ${{ cancelled() }}
+        run: echo "Workflow cancelled!"
+
+      - name: Notify always
+        if: ${{ always() }}
+        run: echo "This runs always, regardless of success or failure."
