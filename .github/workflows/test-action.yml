@@ -1,4 +1,4 @@
-name: Test Set Docker Build Chain Env Vars
+name: Test Action
 
 on: [push, pull_request]
 
